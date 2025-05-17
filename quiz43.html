@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 13</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 13</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (361-390) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Cos’è il diabete mellito?",
+                options: ["Un’infiammazione della vescica", "Una malattia metabolica con iperglicemia", "Un accumulo di liquido nei polmoni"],
+                correct: "Una malattia metabolica con iperglicemia",
+                explanation: "Il diabete mellito è una malattia metabolica caratterizzata da iperglicemia cronica, dovuta a una carenza di insulina (tipo 1) o a resistenza insulinica (tipo 2). Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare la glicemia, somministrare insulina se prescritta e segnalare sintomi come poliuria."
+            },
+            {
+                question: "Quale è un segno tipico del diabete mellito?",
+                options: ["Poliuria", "Ittero", "Oliguria"],
+                correct: "Poliuria",
+                explanation: "La poliuria, ovvero un aumento della produzione di urina, è un segno tipico del diabete mellito, causata dall’iperglicemia. L’ittero e l’oliguria non sono correlati. Gli OSS devono misurare la diuresi, monitorare la glicemia e segnalare sintomi come sete intensa."
+            },
+            {
+                question: "Cos’è l’ipoglicemia nel diabete?",
+                options: ["Un aumento del glucosio nel sangue", "Una diminuzione del glucosio nel sangue", "Un’infiammazione del pancreas"],
+                correct: "Una diminuzione del glucosio nel sangue",
+                explanation: "L’ipoglicemia è una diminuzione del glucosio nel sangue (<70 mg/dL), comune nei diabetici trattati con insulina, con sintomi come tremori e sudorazione. Non è un aumento del glucosio né un’infiammazione del pancreas. Gli OSS devono somministrare zuccheri semplici (es. succo) e segnalare l’episodio."
+            },
+            {
+                question: "Quale è un segno tipico dell’ipoglicemia?",
+                options: ["Sudorazione e tremori", "Poliuria", "Ittero"],
+                correct: "Sudorazione e tremori",
+                explanation: "La sudorazione e i tremori sono segni tipici dell’ipoglicemia, dovuti alla risposta adrenergica. La poliuria e l’ittero non sono correlati. Gli OSS devono agire rapidamente, fornire zuccheri sotto supervisione medica e monitorare la glicemia."
+            },
+            {
+                question: "Cos’è l’iperglicemia nel diabete?",
+                options: ["Una diminuzione del glucosio nel sangue", "Un aumento del glucosio nel sangue", "Un’infiammazione del pancreas"],
+                correct: "Un aumento del glucosio nel sangue",
+                explanation: "L’iperglicemia è un aumento del glucosio nel sangue (>126 mg/dL a digiuno), tipico del diabete non controllato, con sintomi come sete e stanchezza. Non è una diminuzione del glucosio né un’infiammazione del pancreas. Gli OSS devono monitorare la glicemia, garantire idratazione e segnalare valori elevati."
+            },
+            {
+                question: "Quale è un segno tipico dell’iperglicemia?",
+                options: ["Sete intensa", "Sudorazione", "Oliguria"],
+                correct: "Sete intensa",
+                explanation: "La sete intensa (polidipsia) è un segno tipico dell’iperglicemia, dovuta alla disidratazione da poliuria. La sudorazione e l’oliguria non sono primari. Gli OSS devono garantire l’assunzione di liquidi, misurare la glicemia e segnalare sintomi persistenti."
+            },
+            {
+                question: "Cos’è la chetoacidosi diabetica?",
+                options: ["Un’infiammazione della vescica", "Una complicanza del diabete con accumulo di chetoni", "Un accumulo di liquido nei polmoni"],
+                correct: "Una complicanza del diabete con accumulo di chetoni",
+                explanation: "La chetoacidosi diabetica è una complicanza grave del diabete, caratterizzata da iperglicemia, accumulo di chetoni e acidosi, con sintomi come nausea e respiro rapido. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono segnalare immediatamente sintomi come confusione e dispnea."
+            },
+            {
+                question: "Quale è un segno tipico della chetoacidosi diabetica?",
+                options: ["Respiro fruttato", "Poliuria", "Ittero"],
+                correct: "Respiro fruttato",
+                explanation: "Il respiro fruttato, dovuto all’accumulo di chetoni, è un segno tipico della chetoacidosi diabetica. La poliuria è comune nel diabete, ma meno specifica, e l’ittero non è correlato. Gli OSS devono monitorare la respirazione e segnalare sintomi urgenti."
+            },
+            {
+                question: "Cos’è l’ipertiroidismo?",
+                options: ["Un’infiammazione del fegato", "Un aumento della funzione tiroidea", "Un blocco renale"],
+                correct: "Un aumento della funzione tiroidea",
+                explanation: "L’ipertiroidismo è una condizione in cui la tiroide produce troppi ormoni tiroidei, con sintomi come tachicardia, perdita di peso e nervosismo. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare i parametri vitali e segnalare sintomi come tremori."
+            },
+            {
+                question: "Quale è un segno tipico dell’ipertiroidismo?",
+                options: ["Perdita di peso", "Oliguria", "Ittero"],
+                correct: "Perdita di peso",
+                explanation: "La perdita di peso, nonostante un aumento dell’appetito, è un segno tipico dell’ipertiroidismo, dovuta al metabolismo accelerato. L’oliguria e l’ittero non sono correlati. Gli OSS devono monitorare il peso corporeo e segnalare sintomi come tachicardia."
+            },
+            {
+                question: "Cos’è l’ipotiroidismo?",
+                options: ["Un’infiammazione della vescica", "Una riduzione della funzione tiroidea", "Un accumulo di liquido nei polmoni"],
+                correct: "Una riduzione della funzione tiroidea",
+                explanation: "L’ipotiroidismo è una condizione in cui la tiroide produce pochi ormoni tiroidei, con sintomi come stanchezza, aumento di peso e pelle secca. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare i sintomi, garantire il comfort e segnalare bradicardia."
+            },
+            {
+                question: "Quale è un segno tipico dell’ipotiroidismo?",
+                options: ["Aumento di peso", "Poliuria", "Ittero"],
+                correct: "Aumento di peso",
+                explanation: "L’aumento di peso, dovuto al metabolismo rallentato, è un segno tipico dell’ipotiroidismo. La poliuria e l’ittero non sono correlati. Gli OSS devono misurare il peso, osservare la stanchezza e segnalare sintomi come intolleranza al freddo."
+            },
+            {
+                question: "Cos’è il gozzo tiroideo?",
+                options: ["Un’infiammazione del fegato", "Un ingrossamento della tiroide", "Un blocco renale"],
+                correct: "Un ingrossamento della tiroide",
+                explanation: "Il gozzo tiroideo è un ingrossamento della ghiandola tiroidea, spesso causato da carenza di iodio o disfunzioni tiroidee, con sintomi come gonfiore al collo. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare il collo e segnalare difficoltà respiratorie."
+            },
+            {
+                question: "Cos’è la sindrome di Cushing?",
+                options: ["Un’infiammazione della vescica", "Un eccesso di cortisolo", "Un accumulo di liquido nei polmoni"],
+                correct: "Un eccesso di cortisolo",
+                explanation: "La sindrome di Cushing è causata da un eccesso di cortisolo, con sintomi come aumento di peso, viso a luna piena e strie cutanee. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare il peso, osservare la pelle e segnalare sintomi come ipertensione."
+            },
+            {
+                question: "Quale è un segno tipico della sindrome di Cushing?",
+                options: ["Viso a luna piena", "Poliuria", "Ittero"],
+                correct: "Viso a luna piena",
+                explanation: "Il viso a luna piena, dovuto all’accumulo di grasso, è un segno tipico della sindrome di Cushing. La poliuria e l’ittero non sono primari. Gli OSS devono monitorare l’aspetto fisico, misurare la pressione e segnalare sintomi come debolezza muscolare."
+            },
+            {
+                question: "Cos’è la malattia di Addison?",
+                options: ["Un’infiammazione del fegato", "Una carenza di cortisolo e aldosterone", "Un blocco renale"],
+                correct: "Una carenza di cortisolo e aldosterone",
+                explanation: "La malattia di Addison è una carenza di cortisolo e aldosterone dovuta a insufficienza surrenalica, con sintomi come stanchezza, ipotensione e iperpigmentazione. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la pressione e segnalare sintomi come vertigini."
+            },
+            {
+                question: "Quale è un segno tipico della malattia di Addison?",
+                options: ["Iperpigmentazione cutanea", "Oliguria", "Ittero"],
+                correct: "Iperpigmentazione cutanea",
+                explanation: "L’iperpigmentazione cutanea, soprattutto in pieghe e mucose, è un segno tipico della malattia di Addison. L’oliguria e l’ittero non sono correlati. Gli OSS devono osservare la pelle, monitorare i parametri vitali e segnalare sintomi come stanchezza estrema."
+            },
+            {
+                question: "Cos’è l’iperparatiroidismo?",
+                options: ["Un’infiammazione della vescica", "Un eccesso di ormone paratiroideo", "Un accumulo di liquido nei polmoni"],
+                correct: "Un eccesso di ormone paratiroideo",
+                explanation: "L’iperparatiroidismo è un eccesso di ormone paratiroideo, che causa ipercalcemia, con sintomi come stanchezza, dolore osseo e calcoli renali. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare i sintomi, garantire idratazione e segnalare calcoli renali."
+            },
+            {
+                question: "Cos’è l’ipoparatiroidismo?",
+                options: ["Un’infiammazione del fegato", "Una carenza di ormone paratiroideo", "Un blocco renale"],
+                correct: "Una carenza di ormone paratiroideo",
+                explanation: "L’ipoparatiroidismo è una carenza di ormone paratiroideo, che causa ipocalcemia, con sintomi come tetania e crampi muscolari. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare i crampi, somministrare calcio se prescritto e segnalare sintomi neurologici."
+            },
+            {
+                question: "Cos’è l’ipercalcemia?",
+                options: ["Un aumento del calcio nel sangue", "Una diminuzione del calcio nel sangue", "Un’infiammazione del pancreas"],
+                correct: "Un aumento del calcio nel sangue",
+                explanation: "L’ipercalcemia è un aumento del calcio nel sangue, spesso causato da iperparatiroidismo o tumori, con sintomi come stanchezza e confusione. Non è una diminuzione del calcio né un’infiammazione del pancreas. Gli OSS devono garantire idratazione e segnalare sintomi come nausea."
+            },
+            {
+                question: "Cos’è l’ipocalcemia?",
+                options: ["Un aumento del calcio nel sangue", "Una diminuzione del calcio nel sangue", "Un’infiammazione del pancreas"],
+                correct: "Una diminuzione del calcio nel sangue",
+                explanation: "L’ipocalcemia è una diminuzione del calcio nel sangue, spesso causata da ipoparatiroidismo o carenza di vitamina D, con sintomi come tetania e parestesie. Non è un aumento del calcio né un’infiammazione del pancreas. Gli OSS devono monitorare i crampi e segnalare sintomi neurologici."
+            },
+            {
+                question: "Cos’è l’acromegalia?",
+                options: ["Un’infiammazione della vescica", "Un eccesso di ormone della crescita", "Un accumulo di liquido nei polmoni"],
+                correct: "Un eccesso di ormone della crescita",
+                explanation: "L’acromegalia è causata da un eccesso di ormone della crescita in età adulta, con sintomi come ingrossamento di mani, piedi e viso. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare l’aspetto fisico e segnalare sintomi come dolore articolare."
+            },
+            {
+                question: "Quale è un segno tipico dell’acromegalia?",
+                options: ["Ingrossamento delle mani", "Poliuria", "Ittero"],
+                correct: "Ingrossamento delle mani",
+                explanation: "L’ingrossamento delle mani e dei piedi è un segno tipico dell’acromegalia, dovuto all’eccesso di ormone della crescita. La poliuria e l’ittero non sono correlati. Gli OSS devono osservare i cambiamenti fisici e segnalare sintomi come ipertensione."
+            },
+            {
+                question: "Cos’è l’ipopituitarismo?",
+                options: ["Un’infiammazione del fegato", "Una carenza di ormoni ipofisari", "Un blocco renale"],
+                correct: "Una carenza di ormoni ipofisari",
+                explanation: "L’ipopituitarismo è una carenza di uno o più ormoni ipofisari, con sintomi come stanchezza, ipotensione e infertilità. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare i sintomi, misurare i parametri vitali e segnalare segni di insufficienza ormonale."
+            },
+            {
+                question: "Cos’è il diabete insipido?",
+                options: ["Un’infiammazione della vescica", "Una carenza di vasopressina con poliuria", "Un accumulo di liquido nei polmoni"],
+                correct: "Una carenza di vasopressina con poliuria",
+                explanation: "Il diabete insipido è una carenza di vasopressina, che causa poliuria e sete intensa, senza iperglicemia. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono misurare la diuresi, garantire idratazione e segnalare sintomi come disidratazione."
+            },
+            {
+                question: "Quale è un segno tipico del diabete insipido?",
+                options: ["Poliuria estrema", "Ittero", "Oliguria"],
+                correct: "Poliuria estrema",
+                explanation: "La poliuria estrema, con urine diluite, è un segno tipico del diabete insipido, dovuto alla carenza di vasopressina. L’ittero e l’oliguria non sono correlati. Gli OSS devono monitorare l’assunzione di liquidi e segnalare segni di disidratazione."
+            },
+            {
+                question: "Cos’è l’iperaldosteronismo?",
+                options: ["Un’infiammazione del fegato", "Un eccesso di aldosterone", "Un blocco renale"],
+                correct: "Un eccesso di aldosterone",
+                explanation: "L’iperaldosteronismo è un eccesso di aldosterone, che causa ipertensione e ipokaliemia, con sintomi come stanchezza e crampi. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono misurare la pressione, monitorare i crampi e segnalare sintomi."
+            },
+            {
+                question: "Cos’è l’ipokaliemia?",
+                options: ["Un aumento del potassio nel sangue", "Una diminuzione del potassio nel sangue", "Un’infiammazione del pancreas"],
+                correct: "Una diminuzione del potassio nel sangue",
+                explanation: "L’ipokaliemia è una diminuzione del potassio nel sangue, spesso causata da diuretici o iperaldosteronismo, con sintomi come debolezza e aritmie. Non è un aumento del potassio né un’infiammazione del pancreas. Gli OSS devono monitorare i sintomi e segnalare aritmie."
+            },
+            {
+                question: "Cos’è l’iperkaliemia?",
+                options: ["Una diminuzione del potassio nel sangue", "Un aumento del potassio nel sangue", "Un’infiammazione del pancreas"],
+                correct: "Un aumento del potassio nel sangue",
+                explanation: "L’iperkaliemia è un aumento del potassio nel sangue, spesso causata da insufficienza renale, con sintomi come debolezza e aritmie. Non è una diminuzione del potassio né un’infiammazione del pancreas. Gli OSS devono monitorare il polso e segnalare sintomi cardiaci."
+            },
+            {
+                question: "Cos’è l’ipernatriemia?",
+                options: ["Un’infiammazione della vescica", "Un aumento del sodio nel sangue", "Un accumulo di liquido nei polmoni"],
+                correct: "Un aumento del sodio nel sangue",
+                explanation: "L’ipernatriemia è un aumento del sodio nel sangue, spesso causata da disidratazione, con sintomi come sete e confusione. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono garantire idratazione, monitorare i sintomi neurologici e segnalare anomalie."
+            },
+            {
+                question: "Cos’è l’iponatriemia?",
+                options: ["Un aumento del sodio nel sangue", "Una diminuzione del sodio nel sangue", "Un’infiammazione del pancreas"],
+                correct: "Una diminuzione del sodio nel sangue",
+                explanation: "L’iponatriemia è una diminuzione del sodio nel sangue, spesso causata da diuretici o SIADH, con sintomi come confusione e convulsioni. Non è un aumento del sodio né un’infiammazione del pancreas. Gli OSS devono monitorare i sintomi neurologici e segnalare anomalie."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
